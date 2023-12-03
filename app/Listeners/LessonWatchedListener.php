@@ -28,11 +28,8 @@ class LessonWatchedListener
         $user = $event->user;
 
         // Check if this is the first lesson watched
-        if ($user->lessons->count() == 1) {
-            // Find or create the achievement
+        if ($user->watched()->count() == 1) {
             $achievement = Achievement::firstOrCreate(['name' => 'First Lesson Watched']);
-            
-            // Unlock this achievement for the user
             $user->achievements()->attach($achievement);
         }
     }
