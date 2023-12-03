@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Lesson;
 use App\Events\LessonWatched;
+use Illuminate\Support\Facades\Log;
 
 class UserAchievementsTest extends TestCase
 {
@@ -23,11 +24,13 @@ class UserAchievementsTest extends TestCase
         $user = User::factory()->create();
         $lesson = Lesson::factory()->create();
 
+        // Update the pivot table to reflect that the lesson is watched
+        // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
+        $user->watched()->attach($lesson, ['watched' => true]);
+        $user->refresh();
+
         // Dispatch the LessonWatched event
         event(new LessonWatched($lesson, $user));
-
-        // Refresh the user model to get the updated state
-        $user->refresh();
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
