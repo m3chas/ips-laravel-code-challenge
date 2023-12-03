@@ -29,8 +29,24 @@ class LessonWatchedListener
 
         // Check if this is the first lesson watched
         if ($user->watched()->count() == 1) {
-            $achievement = Achievement::firstOrCreate(['name' => 'First Lesson Watched']);
-            $user->achievements()->attach($achievement);
+            $this->unlockAchievement('First Lesson Watched', $user);
         }
+
+        // Check for "5 Lessons Watched" achievement
+        if ($user->watched()->count() == 5) {
+            $this->unlockAchievement('5 Lessons Watched', $user);
+        }
+    }
+
+    /**
+     * Unlock a specific achievement for the user.
+     *
+     * @param string $achievementName
+     * @param \App\Models\User $user
+     */
+    private function unlockAchievement($achievementName, $user)
+    {
+        $achievement = Achievement::firstOrCreate(['name' => $achievementName]);
+        $user->achievements()->attach($achievement);
     }
 }
