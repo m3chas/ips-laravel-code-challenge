@@ -20,7 +20,6 @@ class UserAchievementsTest extends TestCase
      */
     public function testUserUnlocksFirstLessonWatchedAchievement()
     {
-        // Create a user and lesson
         $user = User::factory()->create();
         $lesson = Lesson::factory()->create();
 
@@ -63,12 +62,16 @@ class UserAchievementsTest extends TestCase
             event(new LessonWatched($lesson, $user));
         }
 
+        // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
         $response->assertStatus(200)
-                ->assertJson([
-                    'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched'],
-                    // ... other expected fields
-                ]);
+            ->assertJson([
+                'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched'],
+                'next_available_achievements' => ['5 Lessons Watched'],
+                'current_badge' => '',
+                'next_badge' => '',
+                'remaining_to_unlock_next_badge' => 0
+        ]);
     }
 
 }
