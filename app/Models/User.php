@@ -75,7 +75,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Achievement::class)->withTimestamps();
     }
 
-    public function getBadgeAttribute()
+    /**
+     * Calculate which badge the user is assigned.
+     */
+    public function calculateBadge()
     {
         $achievementCount = $this->achievements->count();
         $badge = Badge::where('achievement_count', '<=', $achievementCount)
@@ -83,6 +86,14 @@ class User extends Authenticatable
                     ->first();
 
         return $badge ? $badge->name : 'Beginner';
+    }
+
+    /**
+     * The badge attribute for user
+     */
+    public function getBadgeAttribute()
+    {
+        return $this->calculateBadge();
     }
 }
 
