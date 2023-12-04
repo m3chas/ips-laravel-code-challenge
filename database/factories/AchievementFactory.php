@@ -23,6 +23,7 @@ class AchievementFactory extends Factory
             'name' => $this->faker->word,
             'description' => $this->faker->sentence,
             'required_count' => $this->faker->randomDigit,
+            'type' => $this->faker->randomElement(['lesson_watched', 'comment_written']),
         ];
     }
 }
