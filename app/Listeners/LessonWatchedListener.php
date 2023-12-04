@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\LessonWatched;
+use App\Events\AchievementUnlocked;
 use App\Models\Achievement;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
@@ -35,6 +36,9 @@ class LessonWatchedListener
         // I've included a validation if the user already have this achievement unlocked.
         if ($achievement && !$user->achievements->contains($achievement->id)) {
             $user->achievements()->attach($achievement);
+            
+            // Dispatch the AchievementUnlocked with achievement name
+            event(new AchievementUnlocked($achievement->name, $user));
         }
     }
 }
