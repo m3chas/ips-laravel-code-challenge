@@ -23,6 +23,7 @@ class CommentWrittenListener
     public function handle(CommentWritten $event): void
     {
         $user = $event->comment->user;
+        $user->load('comments');
         $commentCount = $user->comments()->count();
 
         // Fetch and unlock achievements matching the exact comment count
