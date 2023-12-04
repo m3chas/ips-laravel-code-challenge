@@ -196,7 +196,7 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Comment Written'],
-                'next_available_achievements' => ['3 Comments Written'],
+                'next_available_achievements' => ['5 Lessons Watched'],
                 'current_badge' => '',
                 'next_badge' => '',
                 'remaining_to_unlock_next_badge' => 0

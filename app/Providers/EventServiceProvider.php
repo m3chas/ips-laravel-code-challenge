@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use Illuminate\Auth\Events\Registered;
 use App\Events\LessonWatched;
+use App\Events\CommentWritten;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use App\Listeners\LessonWatchedListener;
+use App\Listeners\CommentWrittenListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
@@ -22,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         LessonWatched::class => [
             LessonWatchedListener::class,
+        ],
+        CommentWritten::class => [
+            CommentWrittenListener::class,
         ],
     ];
 
