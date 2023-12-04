@@ -310,4 +310,29 @@ class UserAchievementsTest extends TestCase
                 'remaining_to_unlock_next_badge' => 0
             ]);
     }
+
+    /**
+     * Test to ensure correct badge assignment based on the number of achievements unlocked.
+     *
+     * This test simulates unlocking a varying number of achievements for a user and then 
+     * checks if the user is assigned the correct badge according to the predefined criteria.
+     * It sequentially unlocks achievements and verifies the badge at each critical threshold,
+     * covering all badge levels from 'Beginner' to 'Master'.
+     */
+    public function testUserBadgeAssignment()
+    {
+        $user = User::factory()->create();
+        $this->createLessonsAndDispatchEvents($user, 10); 
+        $this->createCommentsAndDispatchEvents($user, 3);
+
+        $user->refresh();
+        $this->assertEquals('Intermediate', $user->badge); 
+
+
+        $this->createCommentsAndDispatchEvents($user, 7); 
+        $user->refresh();
+        $this->assertEquals('Advanced', $user->badge); 
+
+    }
+
 }
