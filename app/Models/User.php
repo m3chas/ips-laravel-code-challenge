@@ -74,5 +74,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Achievement::class)->withTimestamps();
     }
+
+    public function getBadgeAttribute()
+    {
+        $achievementCount = $this->achievements->count();
+        $badge = Badge::where('achievement_count', '<=', $achievementCount)
+                    ->orderBy('achievement_count', 'desc')
+                    ->first();
+
+        return $badge ? $badge->name : 'Beginner';
+    }
 }
 
