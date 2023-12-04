@@ -17,6 +17,48 @@ class UserAchievementsTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Setup Achievement data
+        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '50 Lessons Watched', 'required_count' => 50, 'type' => 'lesson_watched']);
+
+        Achievement::factory()->create(['name' => 'First Comment Written', 'required_count' => 1, 'type' => 'comment_written']);
+        Achievement::factory()->create(['name' => '3 Comments Written', 'required_count' => 3, 'type' => 'comment_written']);
+        Achievement::factory()->create(['name' => '5 Comments Written', 'required_count' => 5, 'type' => 'comment_written']);
+        Achievement::factory()->create(['name' => '10 Comments Written', 'required_count' => 10, 'type' => 'comment_written']);
+        Achievement::factory()->create(['name' => '20 Comments Written', 'required_count' => 20, 'type' => 'comment_written']);
+    }
+
+    protected function createLessonsAndDispatchEvents($user, $count)
+    {
+        $lessons = Lesson::factory()->count($count)->create();
+        foreach ($lessons as $lesson) {
+            // Update the pivot table to reflect that the lesson is watched
+            // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
+            $user->watched()->attach($lesson, ['watched' => true]);
+            $user->refresh();
+            
+            // Dispatch the LessonWatched event
+            event(new LessonWatched($lesson, $user));
+        }
+    }
+
+    protected function createCommentsAndDispatchEvents($user, $count)
+    {
+        // Simulate a comment made by the new user and dispatch event after each comment.
+        for ($i = 0; $i < $count; $i++) {
+            $comment = Comment::factory()->create(['user_id' => $user->id]);
+            $user->refresh();
+            event(new CommentWritten($comment));
+        }
+    }
+
     /**
      * Test to ensure a user unlocks the 'First Lesson Watched' achievement 
      * after watching their first lesson.
@@ -29,7 +71,7 @@ class UserAchievementsTest extends TestCase
         $lesson = Lesson::factory()->create();
 
         // Update the pivot table to reflect that the lesson is watched
-    // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
+        // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
         $user->watched()->attach($lesson, ['watched' => true]);
         $user->refresh();
 
@@ -55,20 +97,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFiveLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
-        $lessons = Lesson::factory()->count(5)->create();
 
-        foreach ($lessons as $lesson) {
-            // Update the pivot table to reflect that the lesson is watched
-            // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
-            $user->watched()->attach($lesson, ['watched' => true]);
-            $user->refresh();
-            
-            // Dispatch the LessonWatched event
-            event(new LessonWatched($lesson, $user));
-        }
+        // Dispatch the data and events.
+        $this->createLessonsAndDispatchEvents($user, 5);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -89,21 +121,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksTenLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
-        $lessons = Lesson::factory()->count(10)->create();
-
-        foreach ($lessons as $lesson) {
-            // Update the pivot table to reflect that the lesson is watched
-            // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
-            $user->watched()->attach($lesson, ['watched' => true]);
-            $user->refresh();
-            
-            // Dispatch the LessonWatched event
-            event(new LessonWatched($lesson, $user));
-        }
+        
+        // Dispatch the data and events.
+        $this->createLessonsAndDispatchEvents($user, 10);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -124,22 +145,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksTwentyFiveLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
-        $lessons = Lesson::factory()->count(25)->create();
-
-        foreach ($lessons as $lesson) {
-            // Update the pivot table to reflect that the lesson is watched
-            // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
-            $user->watched()->attach($lesson, ['watched' => true]);
-            $user->refresh();
-            
-            // Dispatch the LessonWatched event
-            event(new LessonWatched($lesson, $user));
-        }
+        
+        // Dispatch the data and events.
+        $this->createLessonsAndDispatchEvents($user, 25);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -160,23 +169,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFiftyLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25, 'type' => 'lesson_watched']);
-        Achievement::factory()->create(['name' => '50 Lessons Watched', 'required_count' => 50, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
-        $lessons = Lesson::factory()->count(50)->create();
 
-        foreach ($lessons as $lesson) {
-            // Update the pivot table to reflect that the lesson is watched
-            // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
-            $user->watched()->attach($lesson, ['watched' => true]);
-            $user->refresh();
-            
-            // Dispatch the LessonWatched event
-            event(new LessonWatched($lesson, $user));
-        }
+        // Dispatch the data and events.
+        $this->createLessonsAndDispatchEvents($user, 50);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -226,16 +222,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksThreeCommentsWrittenAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Comment Written', 'required_count' => 1, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '3 Comments Written', 'required_count' => 3, 'type' => 'comment_written']);
         $user = User::factory()->create();  
 
-        // Simulate a comment made by the new user and dispatch event after each comment.
-        for ($i = 0; $i < 3; $i++) {
-            $comment = Comment::factory()->create(['user_id' => $user->id]);
-            $user->refresh();
-            event(new CommentWritten($comment));
-        }
+        // Dispatch the data and events.
+        $this->createCommentsAndDispatchEvents($user, 3);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -256,17 +246,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFiveCommentsWrittenAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Comment Written', 'required_count' => 1, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '3 Comments Written', 'required_count' => 3, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '5 Comments Written', 'required_count' => 5, 'type' => 'comment_written']);
         $user = User::factory()->create();
 
-        // Simulate a comment made by the new user and dispatch event after each comment.
-        for ($i = 0; $i < 5; $i++) {
-            $comment = Comment::factory()->create(['user_id' => $user->id]);
-            $user->refresh();
-            event(new CommentWritten($comment));
-        }
+        // Dispatch the data and events.
+        $this->createCommentsAndDispatchEvents($user, 5);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -287,18 +270,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksTenCommentsWrittenAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Comment Written', 'required_count' => 1, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '3 Comments Written', 'required_count' => 3, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '5 Comments Written', 'required_count' => 5, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '10 Comments Written', 'required_count' => 10, 'type' => 'comment_written']);
         $user = User::factory()->create();
 
-        // Simulate a comment made by the new user and dispatch event after each comment.
-        for ($i = 0; $i < 10; $i++) {
-            $comment = Comment::factory()->create(['user_id' => $user->id]);
-            $user->refresh();
-            event(new CommentWritten($comment));
-        }
+        // Dispatch the data and events.
+        $this->createCommentsAndDispatchEvents($user, 10);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -319,19 +294,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksTwentyCommentsWrittenAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Comment Written', 'required_count' => 1, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '3 Comments Written', 'required_count' => 3, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '5 Comments Written', 'required_count' => 5, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '10 Comments Written', 'required_count' => 10, 'type' => 'comment_written']);
-        Achievement::factory()->create(['name' => '20 Comments Written', 'required_count' => 20, 'type' => 'comment_written']);
         $user = User::factory()->create();
 
-        // Simulate a comment made by the new user and dispatch event after each comment.
-        for ($i = 0; $i < 20; $i++) {
-            $comment = Comment::factory()->create(['user_id' => $user->id]);
-            $user->refresh();
-            event(new CommentWritten($comment));
-        }
+        // Dispatch the data and events.
+        $this->createCommentsAndDispatchEvents($user, 20);
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
@@ -344,5 +310,4 @@ class UserAchievementsTest extends TestCase
                 'remaining_to_unlock_next_badge' => 0
             ]);
     }
-
 }
