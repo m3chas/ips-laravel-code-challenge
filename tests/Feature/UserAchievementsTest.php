@@ -73,6 +73,7 @@ class UserAchievementsTest extends TestCase
 
         // Make a GET request to the achievements endpoint and assert the expected response
         $response = $this->get("/users/{$user->id}/achievements");
+
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched'],

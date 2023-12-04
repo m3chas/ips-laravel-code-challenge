@@ -26,15 +26,13 @@ class LessonWatchedListener
     public function handle(LessonWatched $event)
     {
         $user = $event->user;
+        $watchedCount = $user->watched()->count();
 
-        // Check if this is the first lesson watched
-        if ($user->watched()->count() == 1) {
-            $this->unlockAchievement('First Lesson Watched', $user);
-        }
-
-        // Check for "5 Lessons Watched" achievement
-        if ($user->watched()->count() == 5) {
-            $this->unlockAchievement('5 Lessons Watched', $user);
+        // Fetch and unlock achievements matching the exact watched lessons count
+        $achievement = Achievement::where('required_count', $watchedCount)->first();
+        // I've included a validation if the user already have this achievement unlocked.
+        if ($achievement && !$user->achievements->contains($achievement->id)) {
+            $user->achievements()->attach($achievement);
         }
     }
 
