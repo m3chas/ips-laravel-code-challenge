@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Lesson;
+use App\Models\Achievement;
 use App\Events\LessonWatched;
 use Illuminate\Support\Facades\Log;
 
@@ -20,6 +21,11 @@ class UserAchievementsTest extends TestCase
      */
     public function testUserUnlocksFirstLessonWatchedAchievement()
     {
+        // Generate necesary data for this test.
+        Achievement::factory()->create([
+            'name' => 'First Lesson Watched',
+            'required_count' => 1,
+        ]);
         $user = User::factory()->create();
         $lesson = Lesson::factory()->create();
 
@@ -49,7 +55,10 @@ class UserAchievementsTest extends TestCase
      */
     public function testUserUnlocksFiveLessonsWatchedAchievement()
     {
-        $user = User::factory()->create();
+        // Generate necesary data for this test.
+        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1]);
+        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5]);
+        $user = User::factory()->create();  
         $lessons = Lesson::factory()->count(5)->create();
 
         foreach ($lessons as $lesson) {
