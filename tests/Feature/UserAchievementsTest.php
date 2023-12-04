@@ -24,12 +24,12 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFirstLessonWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched','required_count' => 1]);
+        Achievement::factory()->create(['name' => 'First Lesson Watched','required_count' => 1, 'type' => 'lesson_watched']);
         $user = User::factory()->create();
         $lesson = Lesson::factory()->create();
 
         // Update the pivot table to reflect that the lesson is watched
-        // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
+    // I made this way due the challenge rule to avoid any logic on the LessonWatched/CommentWritten events. 
         $user->watched()->attach($lesson, ['watched' => true]);
         $user->refresh();
 
@@ -55,8 +55,8 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFiveLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1]);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5]);
+        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
         $lessons = Lesson::factory()->count(5)->create();
 
@@ -89,9 +89,9 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksTenLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1]);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5]);
-        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10]);
+        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
         $lessons = Lesson::factory()->count(10)->create();
 
@@ -124,10 +124,10 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksTwentyFiveLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1]);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5]);
-        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10]);
-        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25]);
+        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
         $lessons = Lesson::factory()->count(25)->create();
 
@@ -160,11 +160,11 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFiftyLessonsWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1]);
-        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5]);
-        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10]);
-        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25]);
-        Achievement::factory()->create(['name' => '50 Lessons Watched', 'required_count' => 50]);
+        Achievement::factory()->create(['name' => 'First Lesson Watched', 'required_count' => 1, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '5 Lessons Watched', 'required_count' => 5, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '10 Lessons Watched', 'required_count' => 10, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '25 Lessons Watched', 'required_count' => 25, 'type' => 'lesson_watched']);
+        Achievement::factory()->create(['name' => '50 Lessons Watched', 'required_count' => 50, 'type' => 'lesson_watched']);
         $user = User::factory()->create();  
         $lessons = Lesson::factory()->count(50)->create();
 
