@@ -7,8 +7,10 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Lesson;
+use App\Models\Comment;
 use App\Models\Achievement;
 use App\Events\LessonWatched;
+use App\Events\CommentWritten;
 use Illuminate\Support\Facades\Log;
 
 class UserAchievementsTest extends TestCase
