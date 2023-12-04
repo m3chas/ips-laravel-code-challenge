@@ -22,10 +22,7 @@ class UserAchievementsTest extends TestCase
     public function testUserUnlocksFirstLessonWatchedAchievement()
     {
         // Generate necesary data for this test.
-        Achievement::factory()->create([
-            'name' => 'First Lesson Watched',
-            'required_count' => 1,
-        ]);
+        Achievement::factory()->create(['name' => 'First Lesson Watched','required_count' => 1]);
         $user = User::factory()->create();
         $lesson = Lesson::factory()->create();
 
@@ -179,4 +176,28 @@ class UserAchievementsTest extends TestCase
             ]);
     }
 
+    public function testUserUnlocksFirstCommentWrittenAchievement()
+    {
+        // Generate necesary data for this test.
+        Achievement::factory()->create(['name' => 'First Comment Written', 'required_count' => 1, 'type' => 'comment_written']);
+        $user = User::factory()->create();  
+
+        // Simulate a comment made by the new user.
+        $comment = Comment::factory()->create(['user_id' => $user->id]);
+        $user->refresh();
+
+        // Simulate CommentWritten event dispatch
+        event(new CommentWritten($comment, $user));
+
+        // Make a GET request to the achievements endpoint and assert the expected response
+        $response = $this->get("/users/{$user->id}/achievements");
+        $response->assertStatus(200)
+            ->assertJson([
+                'unlocked_achievements' => ['First Comment Written'],
+                'next_available_achievements' => ['3 Comments Written'],
+                'current_badge' => '',
+                'next_badge' => '',
+                'remaining_to_unlock_next_badge' => 0
+            ]);
+    }
 }
