@@ -8,6 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Lesson;
 use App\Models\Comment;
+use App\Models\Badge;
 use App\Models\Achievement;
 use App\Events\LessonWatched;
 use App\Events\CommentWritten;
@@ -33,6 +34,11 @@ class UserAchievementsTest extends TestCase
         Achievement::factory()->create(['name' => '5 Comments Written', 'required_count' => 5, 'type' => 'comment_written']);
         Achievement::factory()->create(['name' => '10 Comments Written', 'required_count' => 10, 'type' => 'comment_written']);
         Achievement::factory()->create(['name' => '20 Comments Written', 'required_count' => 20, 'type' => 'comment_written']);
+
+        Badge::factory()->create(['name' => 'Beginner', 'achievement_count' => 0]);
+        Badge::factory()->create(['name' => 'Intermediate', 'achievement_count' => 4]);
+        Badge::factory()->create(['name' => 'Advanced', 'achievement_count' => 8]);
+        Badge::factory()->create(['name' => 'Master', 'achievement_count' => 10]);
     }
 
     protected function createLessonsAndDispatchEvents($user, $count)
@@ -330,8 +336,14 @@ class UserAchievementsTest extends TestCase
 
 
         $this->createCommentsAndDispatchEvents($user, 7); 
+        $this->createLessonsAndDispatchEvents($user, 50); 
         $user->refresh();
         $this->assertEquals('Advanced', $user->badge); 
+
+        $this->createCommentsAndDispatchEvents($user, 10); 
+        $this->createCommentsAndDispatchEvents($user, 7); 
+        $user->refresh();
+        $this->assertEquals('Master', $user->badge); 
 
     }
 
