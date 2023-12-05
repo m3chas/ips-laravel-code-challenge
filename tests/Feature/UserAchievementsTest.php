@@ -90,9 +90,9 @@ class UserAchievementsTest extends TestCase
             ->assertJson([
                 'unlocked_achievements' => ['First Lesson Watched'],
                 'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'current_badge' => 'Beginner',
+                'next_badge' => 'Intermediate',
+                'remaining_to_unlock_next_badge' => 3
             ]);
     }
 
@@ -113,10 +113,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['10 Lessons Watched', 'First Comment Written'],
+                'current_badge' => 'Beginner',
+                'next_badge' => 'Intermediate',
+                'remaining_to_unlock_next_badge' => 2
             ]);
     }
 
@@ -137,10 +137,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched', '10 Lessons Watched'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['25 Lessons Watched', 'First Comment Written'],
+                'current_badge' => 'Beginner',
+                'next_badge' => 'Intermediate',
+                'remaining_to_unlock_next_badge' => 1
             ]);
     }
 
@@ -161,10 +161,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched', '10 Lessons Watched', '25 Lessons Watched'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['50 Lessons Watched', 'First Comment Written'],
+                'current_badge' => 'Intermediate',
+                'next_badge' => 'Advanced',
+                'remaining_to_unlock_next_badge' => 4
             ]);
     }
 
@@ -185,10 +185,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Lesson Watched', '5 Lessons Watched', '10 Lessons Watched', '25 Lessons Watched', '50 Lessons Watched'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['First Comment Written'],
+                'current_badge' => 'Intermediate',
+                'next_badge' => 'Advanced',
+                'remaining_to_unlock_next_badge' => 3
             ]);
     }
 
@@ -214,10 +214,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Comment Written'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['First Lesson Watched', '3 Comments Written'],
+                'current_badge' => 'Beginner',
+                'next_badge' => 'Intermediate',
+                'remaining_to_unlock_next_badge' => 3
             ]);
     }
 
@@ -238,10 +238,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Comment Written', '3 Comments Written'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['First Lesson Watched', '5 Comments Written'],
+                'current_badge' => 'Beginner',
+                'next_badge' => 'Intermediate',
+                'remaining_to_unlock_next_badge' => 2
             ]);
     }
 
@@ -262,10 +262,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Comment Written', '3 Comments Written', '5 Comments Written'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['First Lesson Watched', '10 Comments Written'],
+                'current_badge' => 'Beginner',
+                'next_badge' => 'Intermediate',
+                'remaining_to_unlock_next_badge' => 1
             ]);
     }
 
@@ -286,10 +286,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Comment Written', '3 Comments Written', '5 Comments Written', '10 Comments Written'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['First Lesson Watched', '20 Comments Written'],
+                'current_badge' => 'Intermediate',
+                'next_badge' => 'Advanced',
+                'remaining_to_unlock_next_badge' => 4
             ]);
     }
 
@@ -310,10 +310,10 @@ class UserAchievementsTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'unlocked_achievements' => ['First Comment Written', '3 Comments Written', '5 Comments Written', '10 Comments Written', '20 Comments Written'],
-                'next_available_achievements' => ['5 Lessons Watched'],
-                'current_badge' => '',
-                'next_badge' => '',
-                'remaining_to_unlock_next_badge' => 0
+                'next_available_achievements' => ['First Lesson Watched'],
+                'current_badge' => 'Intermediate',
+                'next_badge' => 'Advanced',
+                'remaining_to_unlock_next_badge' => 3
             ]);
     }
 

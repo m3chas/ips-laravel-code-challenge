@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Achievement;
+use App\Models\Badge;
 use Illuminate\Http\Request;
 
 class AchievementsController extends Controller
@@ -21,8 +23,7 @@ class AchievementsController extends Controller
         // Determine the next available achievements
         $nextAvailableAchievements = $this->getNextAvailableAchievements($user);
 
-        // Determine current and next badge
-        $currentBadge = $this->getCurrentBadge($user);
+        // Determine next badge
         $nextBadge = $this->getNextBadge($user);
 
         // Calculate remaining achievements to unlock next badge
@@ -31,7 +32,7 @@ class AchievementsController extends Controller
         return response()->json([
             'unlocked_achievements' => $unlockedAchievements,
             'next_available_achievements' => $nextAvailableAchievements,
-            'current_badge' => $currentBadge,
+            'current_badge' => $user->badge,
             'next_badge' => $nextBadge,
             'remaining_to_unlock_next_badge' => $remainingToUnlockNextBadge
         ]);
@@ -45,20 +46,36 @@ class AchievementsController extends Controller
      */
     private function getNextAvailableAchievements(User $user)
     {
-        // TODO: Seed achievements with rules
-        return ['5 Lessons Watched'];
-    }
+        // Initialize counts to 0 if no achievements are unlocked
+        $highestLessonAchievementCount = $user->achievements()
+            ->where('type', 'lesson_watched')
+            ->max('required_count') ?? 0;
 
-    /**
-     * Get the current badge of the user.
-     *
-     * @param  User  $user
-     * @return string
-     */
-    private function getCurrentBadge(User $user)
-    {
-        // TODO: Calculate current user's badge
-        return '';
+        $highestCommentAchievementCount = $user->achievements()
+            ->where('type', 'comment_written')
+            ->max('required_count') ?? 0;
+
+        // Get the next lesson and comment achievements
+        $nextLessonAchievement = Achievement::where('type', 'lesson_watched')
+                                            ->where('required_count', '>', $highestLessonAchievementCount)
+                                            ->orderBy('required_count', 'asc')
+                                            ->first();
+
+        $nextCommentAchievement = Achievement::where('type', 'comment_written')
+                                            ->where('required_count', '>', $highestCommentAchievementCount)
+                                            ->orderBy('required_count', 'asc')
+                                            ->first();
+
+        // Prepare the list of next available achievements
+        $nextAvailableAchievements = [];
+        if ($nextLessonAchievement) {
+            $nextAvailableAchievements[] = $nextLessonAchievement->name;
+        }
+        if ($nextCommentAchievement) {
+            $nextAvailableAchievements[] = $nextCommentAchievement->name;
+        }
+
+        return $nextAvailableAchievements;
     }
 
     /**
@@ -69,8 +86,19 @@ class AchievementsController extends Controller
      */
     private function getNextBadge(User $user)
     {
-        // TODO: Calculate current user's next badge
-        return '';
+        $currentBadgeName = $user->badge;
+        $currentBadge = Badge::where('name', $currentBadgeName)->first();
+
+        // Handle the case where the current badge is the highest available
+        if (!$currentBadge) {
+            return null;
+        }
+
+        $nextBadge = Badge::where('achievement_count', '>', $currentBadge->achievement_count)
+                        ->orderBy('achievement_count', 'asc')
+                        ->first();
+
+        return $nextBadge ? $nextBadge->name : null;
     }
 
     /**
@@ -80,9 +108,19 @@ class AchievementsController extends Controller
      * @param  string  $nextBadge
      * @return int
      */
-    private function getRemainingToUnlockNextBadge(User $user, $nextBadge)
+    private function getRemainingToUnlockNextBadge(User $user, $nextBadgeName)
     {
-        // TODO: Implement the logic to calculate remaining achievements for next badge
-        return 0;
+        if (!$nextBadgeName) {
+            return 0;
+        }
+
+        $nextBadge = Badge::where('name', $nextBadgeName)->first();
+        // Add a null check for nextBadge
+        if (!$nextBadge) {
+            return 0;
+        }
+    
+        $userAchievementCount = $user->achievements->count();
+        return max(0, $nextBadge->achievement_count - $userAchievementCount);
     }
 }
